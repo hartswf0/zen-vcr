@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dissolving Wu-Wei Interface</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: black;
+            cursor: none;
+        }
+        #info {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: rgba(255,255,255,0.5);
+            font-family: monospace;
+            transition: all 1s ease;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+    </style>
+
+    <style>
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 300;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+        .back-button:hover {
+            opacity: 1;
+            transform: translateX(-5px);
+        }
+    </style>
+    
+    <style>
+        .page-number {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-family: 'Arial', sans-serif;
+            font-size: 1.5rem;
+            color: rgba(44, 62, 80, 0.5);
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+        .page-number:hover {
+            opacity: 1;
+        }
+    </style>
+    
+    <style>
+        .page-number {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-family: 'Arial', sans-serif;
+            font-size: 1.5rem;
+            color: rgba(44, 62, 80, 0.5);
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+        .page-number:hover {
+            opacity: 1;
+        }
+    </style>
+    
+    <style>
+        .page-number {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-family: 'Arial', sans-serif;
+            font-size: 1.5rem;
+            color: rgba(44, 62, 80, 0.5);
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+        .page-number:hover {
+            opacity: 1;
+        }
+    </style>
+    </head>
+<body>
+    <a href="/index.html" class="back-button">← Uncontracting™</a>
+    
+    <div id="info">Whisper to the digital void...</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <script>
+        class DissolveSpace {
+            constructor() {
+                this.scene = new THREE.Scene();
+                this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                this.renderer = new THREE.WebGLRenderer({ antialias: true });
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                document.body.appendChild(this.renderer.domElement);
+
+                this.mouse = new THREE.Vector2();
+                this.raycaster = new THREE.Raycaster();
+                this.geometries = [];
+                this.interactionCount = 0;
+
+                this.initScene();
+                this.bindEvents();
+                this.animate();
+            }
+
+            initScene() {
+                // Fluid Geometric Landscape
+                const planeGeometry = new THREE.PlaneGeometry(20, 20, 100, 100);
+                const planeMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        time: { value: 0 },
+                        mouseX: { value: 0 },
+                        mouseY: { value: 0 }
+                    },
+                    vertexShader: `
+                        uniform float time;
+                        uniform float mouseX;
+                        uniform float mouseY;
+                        varying vec2 vUv;
+                        
+                        void main() {
+                            vUv = uv;
+                            vec3 pos = position;
+                            
+                            float distanceFromCenter = length(position.xy);
+                            pos.z += sin(distanceFromCenter * 5.0 + time * 2.0) * 0.3;
+                            pos.z += cos(mouseX * 0.05 + mouseY * 0.05) * 0.2;
+                            
+                            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+                        }
+                    `,
+                    fragmentShader: `
+                        uniform float time;
+                        varying vec2 vUv;
+                        
+                        void main() {
+                            vec3 color = vec3(
+                                0.5 + 0.5 * sin(time + vUv.x * 10.0),
+                                0.5 + 0.5 * cos(time + vUv.y * 10.0),
+                                0.5 + 0.5 * sin(time * 2.0)
+                            );
+                            
+                            gl_FragColor = vec4(color, 0.8);
+                        }
+                    `
+                });
+
+                const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+                this.scene.add(plane);
+                this.geometries.push(plane);
+
+                // Scattered Dissolving Fragments
+                const fragmentCount = 50;
+                for (let i = 0; i < fragmentCount; i++) {
+                    const geo = new THREE.TetrahedronGeometry(Math.random() * 0.5);
+                    const mat = new THREE.MeshBasicMaterial({ 
+                        color: new THREE.Color(Math.random(), Math.random(), Math.random()),
+                        transparent: true,
+                        opacity: Math.random()
+                    });
+                    const fragment = new THREE.Mesh(geo, mat);
+                    
+                    fragment.position.set(
+                        (Math.random() - 0.5) * 20,
+                        (Math.random() - 0.5) * 20,
+                        (Math.random() - 0.5) * 20
+                    );
+                    
+                    this.scene.add(fragment);
+                    this.geometries.push(fragment);
+                }
+
+                this.camera.position.z = 5;
+            }
+
+            bindEvents() {
+                window.addEventListener('mousemove', this.onMouseMove.bind(this));
+                window.addEventListener('click', this.onClick.bind(this));
+            }
+
+            onMouseMove(event) {
+                // Normalize mouse coordinates
+                this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+                // Update info text based on mouse movement
+                const info = document.getElementById('info');
+                info.style.opacity = Math.abs(this.mouse.x) * 0.5 + 0.5;
+                info.style.transform = `scale(${1 + Math.abs(this.mouse.x) * 0.2})`;
+            }
+
+            onClick(event) {
+                this.interactionCount++;
+                
+                // Randomly dissolve or transform some geometries
+                this.geometries.forEach(geo => {
+                    if (Math.random() > 0.5) {
+                        gsap.to(geo.scale, {
+                            x: Math.random() * 2,
+                            y: Math.random() * 2,
+                            z: Math.random() * 2,
+                            duration: 1,
+                            ease: "elastic.out"
+                        });
+                        
+                        gsap.to(geo.material, {
+                            opacity: Math.random(),
+                            duration: 1
+                        });
+                    }
+                });
+
+                // Update interaction text
+                const info = document.getElementById('info');
+                info.textContent = this.getInteractionText();
+            }
+
+            getInteractionText() {
+                const texts = [
+                    "Fragments whisper...",
+                    "Digital breath shifts...",
+                    "Geometry remembers...",
+                    "Resistance forms...",
+                    "Dissolution beckons..."
+                ];
+                return texts[this.interactionCount % texts.length];
+            }
+
+            animate() {
+                requestAnimationFrame(this.animate.bind(this));
+
+                // Subtle camera movement
+                this.camera.position.x = Math.sin(Date.now() * 0.0005) * 0.1;
+                this.camera.position.y = Math.cos(Date.now() * 0.0005) * 0.1;
+
+                // Update shader uniforms if applicable
+                this.geometries.forEach(geo => {
+                    if (geo.material.uniforms) {
+                        geo.material.uniforms.time.value = Date.now() * 0.001;
+                        geo.material.uniforms.mouseX.value = this.mouse.x;
+                        geo.material.uniforms.mouseY.value = this.mouse.y;
+                    }
+                });
+
+                this.renderer.render(this.scene, this.camera);
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            new DissolveSpace();
+        });
+    </script>
+
+    
+    
+    
+    
+    <style>
+        .page-number-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .page-number {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(44, 62, 80, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #2c3e50;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .page-number:hover {
+            background-color: rgba(44, 62, 80, 0.2);
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .page-number.question-mark:hover::after {
+            content: '?';
+        }
+
+        .page-number.question-mark:hover {
+            background-color: rgba(52, 152, 219, 0.2);
+        }
+    </style>
+    <div class="page-number-container">
+        <a href="/index.html" class="page-number 3 question-mark">3</a>
+    </div>
+    
+
+    
+    </body>
+</html>

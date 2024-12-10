@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uncontracting™ | Interactive Exploration</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            perspective: 1000px;
+            overflow: hidden;
+        }
+
+        .interactive-container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 40px;
+            text-align: center;
+            transform-style: preserve-3d;
+            transition: all 0.3s ease;
+        }
+
+        .interactive-container:hover {
+            transform: scale(1.02) rotateX(2deg) rotateY(2deg);
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .interaction-prompt {
+            color: #7f8c8d;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="interactive-container">
+        <h1>Uncontracting™ Interactive Space</h1>
+        <p class="interaction-prompt">Where interaction becomes the contract</p>
+    </div>
+
+    
+
+    <script>
+        document.addEventListener('mousemove', (e) => {
+            const container = document.querySelector('.interactive-container');
+            const { clientX, clientY } = e;
+            const { left, top, width, height } = container.getBoundingClientRect();
+            
+            const centerX = left + width / 2;
+            const centerY = top + height / 2;
+            
+            const angleX = (clientY - centerY) / 20;
+            const angleY = -(clientX - centerX) / 20;
+            
+            container.style.transform = `
+                scale(1.02) 
+                rotateX(${angleX}deg) 
+                rotateY(${angleY}deg)
+            `;
+        });
+
+        document.querySelector('.interactive-container').addEventListener('mouseleave', (e) => {
+            e.target.style.transform = 'scale(1) rotateX(0) rotateY(0)';
+        });
+    </script>
+
+    <style>
+        .page-number-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .page-number {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(44, 62, 80, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #2c3e50;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .page-number:hover {
+            background-color: rgba(44, 62, 80, 0.2);
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .page-number.question-mark:hover::after {
+            content: '?';
+        }
+
+        .page-number.question-mark:hover {
+            background-color: rgba(52, 152, 219, 0.2);
+        }
+    </style>
+    <div class="page-number-container">
+        <a href="/index.html" class="page-number 07 question-mark">07</a>
+    </div>
+    
+</body>
+</html>
+    

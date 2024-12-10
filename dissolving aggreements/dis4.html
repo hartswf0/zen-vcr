@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Uncontracting™ | Dissolution Protocol</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background-color: #000;
+            color: #0fff;
+            cursor: none;
+        }
+        #three-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        #interface-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 10;
+            width: 100%;
+            max-width: 600px;
+            transition: all 3s cubic-bezier(0.25, 0.1, 0.25, 1);
+            opacity: 1;
+        }
+        #interface-container.dissolving {
+            transform: translate(-50%, -50%) scale(1.5);
+            opacity: 0;
+        }
+        #title {
+            font-size: 2.5vw;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+            font-weight: 600;
+            color: #0fff;
+        }
+        #agreement-text {
+            font-size: 1rem;
+            max-width: 500px;
+            margin: 0 auto 30px;
+            line-height: 1.6;
+            text-align: center;
+            font-weight: 300;
+        }
+        #signing-interface {
+            background-color: rgba(0,0,0,0.8);
+            border: 1px solid #0fff;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(15,255,15,0.2);
+        }
+        #signature-field {
+            width: 100%;
+            background: rgba(0,0,0,0.9);
+            border: 1px solid #0fff;
+            color: #0fff;
+            padding: 12px;
+            font-family: 'Inter', monospace;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1rem;
+            letter-spacing: 1px;
+        }
+        #dissolve-btn {
+            background-color: transparent;
+            color: #0fff;
+            border: 1px solid #0fff;
+            padding: 12px 24px;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+        #dissolve-btn:hover {
+            background-color: rgba(15,255,15,0.1);
+        }
+        #final-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 100%;
+            max-width: 800px;
+            opacity: 0;
+            transition: all 3s cubic-bezier(0.25, 0.1, 0.25, 1);
+            z-index: 20;
+            color: #0fff;
+            pointer-events: none;
+        }
+        #final-message.visible {
+            opacity: 1;
+        }
+        #final-message.dissolving {
+            transform: translate(-50%, -50%) scale(1.5);
+            opacity: 0;
+        }
+        .micro-text {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-top: 10px;
+            letter-spacing: 1px;
+        }
+    </style>
+
+    <style>
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 300;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+        .back-button:hover {
+            opacity: 1;
+            transform: translateX(-5px);
+        }
+    </style>
+    
+    <style>
+        .page-number {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-family: 'Arial', sans-serif;
+            font-size: 1.5rem;
+            color: rgba(44, 62, 80, 0.5);
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+        .page-number:hover {
+            opacity: 1;
+        }
+    </style>
+    
+    <style>
+        .page-number {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-family: 'Arial', sans-serif;
+            font-size: 1.5rem;
+            color: rgba(44, 62, 80, 0.5);
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+        .page-number:hover {
+            opacity: 1;
+        }
+    </style>
+    
+    <style>
+        .page-number {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-family: 'Arial', sans-serif;
+            font-size: 1.5rem;
+            color: rgba(44, 62, 80, 0.5);
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+        .page-number:hover {
+            opacity: 1;
+        }
+    </style>
+    </head>
+<body>
+    <a href="/index.html" class="back-button">← Uncontracting™</a>
+    
+    <div id="three-container"></div>
+    
+    <div id="interface-container">
+        <h1 id="title">Dissolution Protocol</h1>
+        
+        <p id="agreement-text">
+            Navigating the liminal space of contractual consent, 
+            this protocol provides a mechanism for instantaneous 
+            and total contract nullification.
+        </p>
+        
+        <div id="signing-interface">
+            <input type="text" id="signature-field" placeholder="Enter Dissolution Key">
+            <button id="dissolve-btn">Initiate Dissolution</button>
+            <p class="micro-text">By proceeding, you acknowledge the quantum state of non-agreement</p>
+        </div>
+    </div>
+
+    <div id="final-message">
+        <h2 style="font-size: 2.5vw; letter-spacing: 3px; margin-bottom: 20px;">Contract Dissolved</h2>
+        <p style="font-size: 1rem; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+            Your dissolution request has been processed through our proprietary 
+            quantum nullification framework. All prior obligations, commitments, 
+            and potential interactions have been instantaneously deconstructed.
+        </p>
+        <p class="micro-text" style="margin-top: 20px;">
+            Transaction Reference: [REDACTED]
+            | Temporal Coordinates: Undefined
+        </p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Three.js Text Particles
+        let scene, camera, renderer, textParticles = [];
+        const container = document.getElementById('three-container');
+        const interfaceContainer = document.getElementById('interface-container');
+        const finalMessage = document.getElementById('final-message');
+        const signatureField = document.getElementById('signature-field');
+        const dissolveBtn = document.getElementById('dissolve-btn');
+
+        function initThreeScene() {
+            // Scene setup
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x000000);
+            
+            // Camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 5;
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
+
+            // Text Particles
+            const textContent = "QUANTUM NULLIFICATION DISSOLUTION PROTOCOL UNDEFINED TRANSACTION";
+            const words = textContent.split(' ');
+            
+            words.forEach((word, index) => {
+                const geometry = new THREE.BufferGeometry();
+                const positions = [];
+                const colors = [];
+
+                // Create multiple particles for each word
+                for (let i = 0; i < 100; i++) {
+                    positions.push(
+                        (Math.random() - 0.5) * 15,
+                        (Math.random() - 0.5) * 15,
+                        (Math.random() - 0.5) * 15
+                    );
+
+                    // More complex color generation
+                    const greenIntensity = Math.random() * 0.5 + 0.5;
+                    colors.push(0, greenIntensity, greenIntensity * 0.7);
+                }
+
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+                geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+                const material = new THREE.PointsMaterial({ 
+                    size: 0.08, 
+                    vertexColors: true,
+                    blending: THREE.AdditiveBlending,
+                    transparent: true,
+                    opacity: 0.7
+                });
+
+                const particles = new THREE.Points(geometry, material);
+                particles.originalPositions = geometry.getAttribute('position').array.slice();
+                scene.add(particles);
+                textParticles.push(particles);
+            });
+
+            // Animation loop
+            animate();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // More complex particle movement
+            textParticles.forEach((particles, index) => {
+                const positions = particles.geometry.getAttribute('position');
+                const originalPositions = particles.originalPositions;
+
+                for (let i = 0; i < positions.count; i++) {
+                    // Create more dynamic, noise-like movement
+                    const time = Date.now() * 0.001;
+                    positions.array[i * 3] = originalPositions[i * 3] + 
+                        Math.sin(time * (1 + i * 0.1)) * 0.1;
+                    positions.array[i * 3 + 1] = originalPositions[i * 3 + 1] + 
+                        Math.cos(time * (1 + i * 0.15)) * 0.1;
+                    positions.array[i * 3 + 2] = originalPositions[i * 3 + 2] + 
+                        Math.sin(time * (1 + i * 0.2)) * 0.1;
+                }
+                positions.needsUpdate = true;
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        // Dissolution mechanism
+        dissolveBtn.addEventListener('click', () => {
+            if (signatureField.value.trim() !== '') {
+                // Dissolve initial interface
+                interfaceContainer.classList.add('dissolving');
+
+                // Particle dissolution effect
+                textParticles.forEach(particles => {
+                    const positions = particles.geometry.getAttribute('position');
+                    const originalPositions = particles.originalPositions;
+
+                    for (let i = 0; i < positions.count; i++) {
+                        // More dramatic scatter
+                        positions.array[i * 3] += (Math.random() - 0.5) * 30;
+                        positions.array[i * 3 + 1] += (Math.random() - 0.5) * 30;
+                        positions.array[i * 3 + 2] += (Math.random() - 0.5) * 30;
+                    }
+                    positions.needsUpdate = true;
+                });
+
+                // Show final message
+                setTimeout(() => {
+                    interfaceContainer.style.display = 'none';
+                    finalMessage.classList.add('visible');
+                }, 3000);
+
+                // Dissolve final message
+                setTimeout(() => {
+                    finalMessage.classList.add('dissolving');
+                }, 6000);
+            }
+        });
+
+        // Responsive design
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Initialize Three.js scene
+        initThreeScene();
+    </script>
+
+    
+    
+    
+    
+    <style>
+        .page-number-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .page-number {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(44, 62, 80, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #2c3e50;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .page-number:hover {
+            background-color: rgba(44, 62, 80, 0.2);
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .page-number.question-mark:hover::after {
+            content: '?';
+        }
+
+        .page-number.question-mark:hover {
+            background-color: rgba(52, 152, 219, 0.2);
+        }
+    </style>
+    <div class="page-number-container">
+        <a href="/index.html" class="page-number 4 question-mark">4</a>
+    </div>
+    
+
+    
+    </body>
+</html>

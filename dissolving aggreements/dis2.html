@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dissolving Agreements</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
+            font-family: 'Courier New', monospace;
+            cursor: none;
+        }
+
+        #background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #000, #111, #000);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        #text-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+            color: #fff;
+            mix-blend-mode: difference;
+            text-align: center;
+        }
+
+        .text-layer {
+            position: absolute;
+            white-space: nowrap;
+            font-size: 3vw;
+            opacity: 0.7;
+            transition: all 0.5s ease;
+            transform-origin: center;
+        }
+
+        #cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 1000;
+            mix-blend-mode: difference;
+            transition: transform 0.1s ease-out;
+        }
+
+        #interaction-count {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            opacity: 0.5;
+            font-size: 0.8rem;
+            mix-blend-mode: difference;
+        }
+    </style>
+
+    <style>
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 300;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+        .back-button:hover {
+            opacity: 1;
+            transform: translateX(-5px);
+        }
+    </style>
+    
+    <style>
+        .page-number {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-family: 'Arial', sans-serif;
+            font-size: 1.5rem;
+            color: rgba(44, 62, 80, 0.5);
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+        .page-number:hover {
+            opacity: 1;
+        }
+    </style>
+    
+    <style>
+        .page-number {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-family: 'Arial', sans-serif;
+            font-size: 1.5rem;
+            color: rgba(44, 62, 80, 0.5);
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+        .page-number:hover {
+            opacity: 1;
+        }
+    </style>
+    
+    <style>
+        .page-number {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-family: 'Arial', sans-serif;
+            font-size: 1.5rem;
+            color: rgba(44, 62, 80, 0.5);
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+        .page-number:hover {
+            opacity: 1;
+        }
+    </style>
+    </head>
+<body>
+    <a href="/index.html" class="back-button">← Uncontracting™</a>
+    
+    <div id="background"></div>
+    <div id="text-container"></div>
+    <div id="cursor"></div>
+    <div id="interaction-count">Interactions: 0</div>
+
+    <script>
+        const textContainer = document.getElementById('text-container');
+        const backgroundEl = document.getElementById('background');
+        const cursorEl = document.getElementById('cursor');
+        const interactionCountEl = document.getElementById('interaction-count');
+
+        const words = [
+            'Dissolving', 'Agreements', 'Fluid', 'Interaction', 
+            'Ephemeral', 'Meaning', 'Blending', 'Boundaries',
+            'Wu-Wei', 'Spontaneity', 'Transformation'
+        ];
+
+        let interactionCount = 0;
+
+        function createTextLayer(word) {
+            const layer = document.createElement('div');
+            layer.classList.add('text-layer');
+            layer.textContent = word;
+            
+            // Random initial positioning
+            layer.style.top = `${Math.random() * 100}%`;
+            layer.style.left = `${Math.random() * 100}%`;
+            layer.style.transform = `
+                rotate(${Math.random() * 360}deg) 
+                scale(${0.5 + Math.random() * 1.5})
+            `;
+
+            return layer;
+        }
+
+        function initializeText() {
+            words.forEach(word => {
+                const layer = createTextLayer(word);
+                textContainer.appendChild(layer);
+            });
+        }
+
+        function handleMouseMove(e) {
+            // Cursor tracking
+            cursorEl.style.left = `${e.clientX}px`;
+            cursorEl.style.top = `${e.clientY}px`;
+
+            // Background warping
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            const transformX = (e.clientX - centerX) / centerX * 10;
+            const transformY = (e.clientY - centerY) / centerY * 10;
+            
+            backgroundEl.style.transform = `
+                perspective(1000px) 
+                rotateX(${-transformY}deg) 
+                rotateY(${transformX}deg)
+            `;
+
+            // Text layers movement
+            const textLayers = document.querySelectorAll('.text-layer');
+            textLayers.forEach(layer => {
+                const rect = layer.getBoundingClientRect();
+                const distanceX = e.clientX - (rect.left + rect.width / 2);
+                const distanceY = e.clientY - (rect.top + rect.height / 2);
+                
+                layer.style.transform = `
+                    translate(${distanceX / 50}px, ${distanceY / 50}px)
+                    rotate(${Math.sin(Date.now() / 1000) * 10}deg)
+                    scale(${1 + Math.abs(distanceX + distanceY) / 5000})
+                `;
+            });
+        }
+
+        function handleClick(e) {
+            interactionCount++;
+            interactionCountEl.textContent = `Interactions: ${interactionCount}`;
+
+            // Create dissolving effect
+            const textLayers = document.querySelectorAll('.text-layer');
+            textLayers.forEach(layer => {
+                layer.style.transform += ' scale(2)';
+                layer.style.opacity = '0';
+                
+                setTimeout(() => {
+                    layer.style.transform = `
+                        rotate(${Math.random() * 360}deg) 
+                        scale(${0.5 + Math.random() * 1.5})
+                    `;
+                    layer.style.opacity = '0.7';
+                }, 500);
+            });
+
+            // Create a brief color shift
+            backgroundEl.style.filter = 'hue-rotate(90deg)';
+            setTimeout(() => {
+                backgroundEl.style.filter = 'none';
+            }, 200);
+        }
+
+        // Initialize
+        initializeText();
+
+        // Event Listeners
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('click', handleClick);
+    </script>
+
+    
+    
+    
+    
+    <style>
+        .page-number-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .page-number {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(44, 62, 80, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #2c3e50;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .page-number:hover {
+            background-color: rgba(44, 62, 80, 0.2);
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .page-number.question-mark:hover::after {
+            content: '?';
+        }
+
+        .page-number.question-mark:hover {
+            background-color: rgba(52, 152, 219, 0.2);
+        }
+    </style>
+    <div class="page-number-container">
+        <a href="/index.html" class="page-number 2 question-mark">2</a>
+    </div>
+    
+
+    
+    </body>
+</html>
